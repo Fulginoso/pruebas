@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Usuarios</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .box { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; border-radius: 6px; width: 400px;}
+        h2 { margin-top: 0; }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 6px; margin-top: 4px; }
+        button { margin-top: 12px; width: 100%; padding: 10px; }
+        #output { margin-top: 20px; padding: 15px; border: 1px solid #333; min-height: 50px; background: #eef; }
+    </style>
+</head>
+<body>
+
+<h1>Sistema de Usuarios (Demo para Selenium)</h1>
+
+<!-- REGISTRO -->
+<div class="box" id="register-box">
+    <h2>Registro de Usuario</h2>
+    <label for="reg-username">Usuario</label>
+    <input type="text" id="reg-username">
+
+    <label for="reg-password">Contraseña</label>
+    <input type="password" id="reg-password">
+
+    <button id="btn-register">Registrar</button>
+</div>
+
+<!-- LOGIN -->
+<div class="box" id="login-box">
+    <h2>Iniciar Sesión</h2>
+    <label for="login-username">Usuario</label>
+    <input type="text" id="login-username">
+
+    <label for="login-password">Contraseña</label>
+    <input type="password" id="login-password">
+
+    <button id="btn-login">Entrar</button>
+</div>
+
+<!-- CONSULTA PERFIL -->
+<div class="box" id="profile-box">
+    <h2>Consultar Perfil</h2>
+    <label for="profile-username">Usuario</label>
+    <input type="text" id="profile-username">
+
+    <button id="btn-profile">Consultar</button>
+</div>
+
+<!-- TRANSFERENCIA -->
+<div class="box" id="transfer-box">
+    <h2>Transferencia de Saldo</h2>
+
+    <label for="from-user">Usuario origen</label>
+    <input type="text" id="from-user">
+
+    <label for="to-user">Usuario destino</label>
+    <input type="text" id="to-user">
+
+    <label for="amount">Monto</label>
+    <input type="number" id="amount">
+
+    <button id="btn-transfer">Transferir</button>
+</div>
+
+<!-- OUTPUT -->
+<div id="output">Esperando acciones...</div>
+
+<script>
+    // Simulación local del backend Java
+    const db = {};
+
+    document.getElementById("btn-register").onclick = () => {
+        const u = document.getElementById("reg-username").value;
+        const p = document.getElementById("reg-password").value;
+
+        if (db[u]) {
+            document.getElementById("output").innerText = "❌ El usuario ya existe";
+            return;
+        }
+        db[u] = { password: p, balance: 100 };
+        document.getElementById("output").innerText = "✔ Usuario registrado: " + u;
+    };
+
+    document.getElementById("btn-login").onclick = () => {
+        const u = document.getElementById("login-username").value;
+        const p = document.getElementById("login-password").value;
+
+        if (!db[u]) {
+            document.getElementById("output").innerText = "❌ Usuario no encontrado";
+            return;
+        }
+        if (db[u].password !== p) {
+            document.getElementById("output").innerText = "❌ Contraseña incorrecta";
+            return;
+        }
+        document.getElementById("output").innerText = "✔ Login exitoso: " + u;
+    };
+
+    document.getElementById("btn-profile").onclick = () => {
+        const u = document.getElementById("profile-username").value;
+
+        if (!db[u]) {
+            document.getElementById("output").innerText = "❌ Usuario no encontrado";
+            return;
+        }
+        const info = db[u];
+        document.getElementById("output").innerText =
+            `✔ Perfil de ${u} → Saldo: ${info.balance}`;
+    };
+
+    document.getElementById("btn-transfer").onclick = () => {
+        const from = document.getElementById("from-user").value;
+        const to = document.getElementById("to-user").value;
+        const amount = parseFloat(document.getElementById("amount").value);
+
+        if (!db[from] || !db[to]) {
+            document.getElementById("output").innerText = "❌ Uno de los usuarios no existe";
+            return;
+        }
+        if (db[from].balance < amount) {
+            document.getElementById("output").innerText = "❌ Saldo insuficiente";
+            return;
+        }
+        db[from].balance -= amount;
+        db[to].balance += amount;
+
+        document.getElementById("output").innerText =
+            `✔ Transferencia realizada: ${amount} de ${from} a ${to}`;
+    };
+</script>
+
+</body>
+</html>
